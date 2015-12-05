@@ -70,6 +70,8 @@ class MissingPrice
       parser.css('span.offerPrice')[0].text.match(/\d.+/)
     when 'best buy'
       parser.css('div.item-price')[0].text.match(/\d.+/)
+    when 'redcoon de'
+      parser.css('meta[itemprop="price"]')[0]['content']
     end
   end
 
@@ -92,6 +94,8 @@ class MissingPrice
       parser.css('div.shipping')[0].text.gsub(/\s+/,' ').strip
     when 'best buy'
       parser.css('ul.availability-list div.sidebar-blurb-message')[0].text.gsub(/\s+/,' ').strip
+    when 'redcoon de'
+      parser.css('meta[itemprop="availability"]')[0]['content']
     end
   end
 
