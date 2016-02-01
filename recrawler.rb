@@ -13,7 +13,7 @@ class MissingPrice
 	end
 
   def parser
-    @parser ||= Nokogiri::HTML(open(url))
+    @parser ||= Nokogiri::HTML(open(url, 'User-Agent' => 'chrome'))
   end
 
   def final_price
@@ -50,12 +50,12 @@ class MissingPrice
   private
   def new_price_lookup
     case store.downcase
-    when 'walmart'
+    when 'walmart.com'
       parser.css('div.js-product-add-lists-summary button')[0]['data-product-price'].match(/\d.+/)
-    when 'tigerdirect'
+    when 'tigerdirect.com'
       parser.css('span.salePrice')[0].text.match(/\d.+/)
-		when 'amazon'
-			parser.css('span#priceblock_ourprice')[0].text.match(/\d.+/)
+	when 'officedepot.com'
+	  parser.css('meta[itemprop="price"]')[0]['content']
     when 'rakuten'
       if parser.at_css('div#pricecurtain')
         parser.css('div#pricecurtain')[0]['data-price'].match(/\d.+/)
@@ -66,9 +66,9 @@ class MissingPrice
       parser.css('div#primaryProductPurchaseInfoBlock span#singleCurrentItemLabel').text
     when 'pcconnection'
       parser.css('meta[itemprop="price"]')[0]['content'].match(/\d.+/)
-    when 'target'
+    when 'target.com'
       parser.css('span.offerPrice')[0].text.match(/\d.+/)
-    when 'best buy'
+    when 'bestbuy.com'
       parser.css('div.item-price')[0].text.match(/\d.+/)
     when 'redcoon de'
       parser.css('meta[itemprop="price"]')[0]['content']
@@ -78,21 +78,21 @@ class MissingPrice
 
   def new_stock_lookup
     case store.downcase
-    when 'walmart'
+    when 'walmart.com'
       parser.css('meta[itemprop="availability"]')[0]['content']
-    when 'tigerdirect'
+    when 'tigerdirect.com'
       parser.css('dl.itemStock strong').text
-    when 'amazon'
-      parser.css('div#availability')[0].text.gsub(/\s+/,' ').strip
+    when 'officedepot.com'
+      parser.css('div.deliveryMessage')[0].text.gsub(/\s+/,' ').strip
     when 'rakuten'
       parser.css('link[itemprop="availability"]')[0]['href']
     when 'cdw'
       parser.css('div#primaryProductAvailability').text
     when 'pcconnection'
       parser.css('div#ctl00_content_ucProductDetails_divStatusTitle')[0].text.gsub(/\s+/,' ').strip
-    when 'target'
+    when 'target.com'
       parser.css('div.shipping')[0].text.gsub(/\s+/,' ').strip
-    when 'best buy'
+    when 'bestbuy.com'
       parser.css('ul.availability-list div.sidebar-blurb-message')[0].text.gsub(/\s+/,' ').strip
     when 'redcoon de'
       parser.css('meta[itemprop="availability"]')[0]['content']
@@ -101,22 +101,24 @@ class MissingPrice
 
   def new_reseller_lookup
     case store.downcase
-    when 'walmart'
+    when 'walmart.com'
       parser.css('div.product-seller b')[0].text
-    when 'tigerdirect'
+    when 'tigerdirect.com'
       'TigerDirect'
-    when 'amazon'
-      parser.css('div#merchant-info')[0].text.gsub(/\s+/,' ').strip
+    when 'officedepot.com'
+      'OfficeDepot.com'
     when 'rakuten'
       parser.css('span.text-seller strong')[0].text
     when 'cdw'
       'CDW'
     when 'pcconnection'
       'PCConecction'
-    when 'target'
+    when 'target.com'
       'Target'
-    when 'best buy'
+    when 'bestbuy.com'
       parser.css('div.marketplace-featured a')[0].text
+     when 'redcoon de'
+      'redcoon de'
     end
   end
 
